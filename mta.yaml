@@ -71,6 +71,15 @@ modules:
 #        service_url: ${default-url}
 #== End Custom Block ==
 
+
+ - name: ver
+   type: nodejs
+   path: ver
+   provides:
+    - name: ver_api
+      properties:
+         url: ${default-url}
+
 resources:
  - name: hdi-container
    properties:
