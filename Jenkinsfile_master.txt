@@ -4,94 +4,49 @@
 // http://groovy-lang.org/semantics.html
 node {
 	stage('Pull') {
-		git credentialsId: 'i830671', url: 'git@hxe2.sfphcp.com:BYOL/Python/mta_python.git'
+		git credentialsId: 'alunde', url: 'https://alunde@bitbucket.org/byol/mta_base.git'
 	}
 	
 	stage('Prep') {
 		echo 'Reminder:  When executing things manually in the workspace, Use "sudo -u jenkins" so that you are running as jenkins.'
-		echo 'Commenting out the Surrogate section and uncommenting the Custom section of the mta.yaml file.'
-		sh 'python tools/desurrogate.py mta.yaml mta-des.yaml'
-		sh 'mv mta.yaml mta-save.yaml'
-		sh 'mv mta-des.yaml mta.yaml'
-		sh 'cat mta.yaml'
+		//echo 'Commenting out the Surrogate section and uncommenting the Custom section of the mta.yaml file.'
+		//sh 'python tools/desurrogate.py mta.yaml mta-des.yaml'
+		//sh 'mv mta.yaml mta-save.yaml'
+		//sh 'mv mta-des.yaml mta.yaml'
+		//sh 'cat mta.yaml'
 	}
 
 	stage('Build') {
 		echo 'Building......'
 
 		echo 'Loggin In'
-		sh 'xs api https://hxe2.sfphcp.com:30030 --cacert /hana/shared/HXE/xs/controller_data/controller/ssl-pub/router/default.root.crt.pem'
-		sh 'xs login -u XSA_DEV -p Welcome6 -o HANAExpress -s DEV'
-		//sh 'xs a'
-		
-		
-		//sh 'echo Deploy to XSA'
-		//sh 'mkdir -p target'
-		
+		sh 'xs api https://hxe2sp02.sap-a-team.com:30030 --cacert /hana/shared/HXE/xs/controller_data/controller/ssl-pub/router/default.root.crt.pem'
+		sh 'xs login -u XSA_DEV -p Plak848! -o HANAExpress -s development'
+
+		sh 'echo Configuring NodeJS Registry'
 		// Override with local registry
-		//sh 'npm config delete @sap:registry ; npm config set registry "https://hxe2.sfphcp.com:51033" ; npm config set strict-ssl false'
+		//sh 'npm config delete @sap:registry ; npm config set registry "https://hxe2demi.sap-a-team.com:51033" ; npm config set strict-ssl false'
 		
 		// Use SAP and Public registry
 		sh 'npm config set @sap:registry "https://npm.sap.com/" ; npm config set registry "https://registry.npmjs.org/" ; npm config set strict-ssl true'
 		
-		sh 'xsa_re_cs xsuaa default mta-python-uaa'
+		// Rebuild the DB module if needed.
+		// Prep script npm installs the required things and builds the default-services.json file
+		sh 'prep4hdi-deploy db base-container'
+		// Run HDI-Deploy
+		sh 'hdi-deploy db'
 
-		
-	//	sh 'cd js ; rm -rf node_modules ; npm install ; cd ..'
-	//	sh 'xs push XSA_DEV-klqh96msgfjiijux-mta_python-js -p js'
-		//sh 'xs bind-service XSA_DEV-klqh96msgfjiijux-mta_python-js XSA_DEV-klqh96msgfjiijux-mta_python-hdi-container'
-	//	sh 're_bind XSA_DEV-klqh96msgfjiijux-mta_python-js XSA_DEV-klqh96msgfjiijux-mta_python-hdi-container'
-	//	sh 'xs restart XSA_DEV-klqh96msgfjiijux-mta_python-js'
+		sh 'rebuild_mod base- xsjs base-container'
 
-	// Note this buildscript doesn't build the db module.  Use the WebIDE for that.
-	
-		sh 'rebuild_mod XSA_DEV-klqh96msgfjiijux-mta_python- js XSA_DEV-klqh96msgfjiijux-mta_python-hdi-container'
-		sh 're_bind XSA_DEV-klqh96msgfjiijux-mta_python-js mta-python-uaa'
-		
-		//sh 'mta --build-target XSA --mtar target/mta_python-xsa.mtar build'
-		//sh 'unmta target/mta_python-xsa.mtar --fix-version'
-		//sh 'xs deploy target/mta_python-xsa.mtar --use-namespaces'
-		//sh 'xs deploy . --use-namespaces --no-namespaces-for-services'
-		//
-		//cf create-service xsuaa application my-uaa
-		//cf create-service hanatrial hdi-shared hdi-container
-		//cf deploy mta-assembly/mta_python.mtar --use-namespaces --no-namespaces-for-services
-		//	
-		//sh 'npm config set registry "https://hxe2.sfphcp.com:51033" ; npm config set strict-ssl false ; cd js ; npm install ; cd ..'
-		//sh 'xs app di-local-npm-registry --urls'
-		//sh 'npm config set registry https://hxe2.sfphcp.com:51033'
-		//sh 'xs push XSA_DEV-klqh96msgfjiijux-mta_python-js -p js'
-		//sh 'xs bind-service XSA_DEV-klqh96msgfjiijux-mta_python-js XSA_DEV-klqh96msgfjiijux-mta_python-hdi-container'
-		//sh 'xs restart XSA_DEV-klqh96msgfjiijux-mta_python-js'
-		//sh 'xs env XSA_DEV-klqh96msgfjiijux-mta_python-js'
-		//
-		//sh 'xs push XSA_DEV-klqh96msgfjiijux-mta_python-python -p python -b sap_python_buildpack -c "python hello.py"'
+		sh 'rebuild_mod base- nodejs base-container'
 
+//		sh 'xsa_re_cs xsuaa default mta-python-uaa'
+
+		// NodeJS module
 
 		// Python module
-//		sh 'xs push XSA_DEV-klqh96msgfjiijux-mta_python-python -p python -b sap_python_buildpack'
-		sh 'xs push XSA_DEV-klqh96msgfjiijux-mta_python-python -p python -b my_python_buildpack'
-		//sh 'xs bind-service XSA_DEV-klqh96msgfjiijux-mta_python-python XSA_DEV-klqh96msgfjiijux-mta_python-hdi-container'
-		sh 're_bind XSA_DEV-klqh96msgfjiijux-mta_python-python XSA_DEV-klqh96msgfjiijux-mta_python-hdi-container'
-//  Do this once...
-		sh 're_bind XSA_DEV-klqh96msgfjiijux-mta_python-python mta-python-uaa'
-	//	sh 'xs restart XSA_DEV-klqh96msgfjiijux-mta_python-python'
-	//	sh 'xs env XSA_DEV-klqh96msgfjiijux-mta_python-python'
-		//
-		// Could dynamically figure out the the python module's url is and then set-env the destination var of the web module to match
 
 		// Web Module
-		sh 'rebuild_mod XSA_DEV-klqh96msgfjiijux-mta_python- web mta-python-uaa'
-
-		sh 'chmod 755 tools/remap_approuter.sh'
-		sh 'tools/remap_approuter.sh'
-		
-		//xs app XSA_DEV-klqh96msgfjiijux-mta_python-js --urls
-		//xs app XSA_DEV-klqh96msgfjiijux-mta_python-python --urls
-		//xs set-env XSA_DEV-klqh96msgfjiijux-mta_python-web destinations '[{"name":"js_be","url":"https://hxe2.sfphcp.com:51047"},{"forwardAuthToken":true,"name":"python_be","url":"https://hxe2.sfphcp.com:51026"}]'
-		//xs restage XSA_DEV-klqh96msgfjiijux-mta_python-web
-		//xs restart XSA_DEV-klqh96msgfjiijux-mta_python-web 
-
 
 	}    
 	
@@ -100,9 +55,10 @@ node {
     }
     
     stage('Notify') {
-		mail to: 'andrew.lunde@sap.com', from: 'andrew.lunde@sap.com', 
-		subject: "Fries are done! Job ${env.JOB_NAME} (${env.BUILD_NUMBER})", 
-		body: "The python module has been rebuilt. $JOB_URL \n\n AppRouter = https://hxe2.sfphcp.com:51050"
+		echo 'Notifying....'
+//		mail to: 'andrew.lunde@sap.com', from: 'andrew.lunde@sap.com', 
+//		subject: "Fries are done! Job ${env.JOB_NAME} (${env.BUILD_NUMBER})", 
+//		body: "The mta_base module has been rebuilt. ${env.JOB_URL} \n\n AppRouter = https://hxe2demi.sap-a-team.com:51050"
     }
     
 
