@@ -32,13 +32,13 @@ node {
 		
 		// Rebuild the DB module if needed.
 		// Prep script npm installs the required things and builds the default-services.json file
-		sh 'prep4hdi-deploy db base-container'
+		sh 'prep4hdi-deploy db python-container'
 		// Run HDI-Deploy
 		sh 'hdi-deploy db'
 
-		sh 'rebuild_mod base- xsjs base-container'
+//		sh 'rebuild_mod base- xsjs python-container'
 
-		sh 'rebuild_mod base- nodejs base-container'
+//		sh 'rebuild_mod base- nodejs python-container'
 
 //		sh 'xsa_re_cs xsuaa default mta-python-uaa'
 
