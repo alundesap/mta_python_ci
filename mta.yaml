@@ -1,0 +1,80 @@
+_schema-version: '2.0'
+ID: mta_python
+description: Multi-Target Application with Python Module
+version: 0.0.1
+
+modules:
+ - name: db
+   type: hdb
+   path: db/
+   requires:
+    - name: hdi-container
+
+ - name: web
+   type: html5
+   path: web/
+   parameters:
+      memory: 96MB
+      disk: 256M
+   requires: 
+    - name: mta-python-uaa
+    - name: js_api
+      group: destinations
+      properties:
+        name: js_be
+        url: ~{service_url}
+        forwardAuthToken: true
+    - name: python_api
+      group: destinations
+      properties:
+        name: python_be
+#== Begin Surrogate Block ==
+        url:  "https://hxe2.sfphcp.com:51026"
+#== End Surrogate Block ==
+#== Begin Custom Block ==
+#        url: ~{service_url}
+#== End Custom Block ==
+        forwardAuthToken: true
+
+ - name: js
+   type: nodejs
+   path: js/
+   parameters:
+      memory: 96MB
+      disk: 256M
+   requires:
+    - name: mta-python-uaa
+    - name: hdi-container
+   provides:
+    - name: js_api
+      properties:
+        service_url: ${default-url}
+#== Begin Surrogate Block ==
+    - name: python_api
+      properties:
+        service_url: ${default-url}
+#== End Surrogate Block ==
+
+#== Begin Custom Block ==
+# - name: python
+#   type: custom
+#   path: python/
+#   parameters:
+#      memory: 32MB
+#      disk: 256M
+#   requires:
+#    - name: mta-python-uaa
+#    - name: hdi-container
+#   provides:
+#    - name: python_api
+#      properties:
+#        service_url: ${default-url}
+#== End Custom Block ==
+
+resources:
+ - name: hdi-container
+   properties:
+      hdi-container-name: ${service-name}
+   type: com.sap.xs.hdi-container
+ - name: mta-python-uaa
+   type: com.sap.xs.uaa  

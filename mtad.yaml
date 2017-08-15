@@ -1,0 +1,63 @@
+ID: mta_python
+_schema-version: '2.0'
+description: Multi-Target Application with Python Module
+modules:
+ - name: db
+   requires:
+    - name: hdi-container
+   type: com.sap.xs.hdi
+   path: db/
+ - name: web
+   parameters:
+      memory: 96MB
+      disk: 256M
+   requires:
+    - name: mta-python-uaa
+    - group: destinations
+      name: js_api
+      properties:
+         name: js_be
+         url: ~{service_url}
+         forwardAuthToken: true
+    - group: destinations
+      name: python_api
+      properties:
+         name: python_be
+         url: ~{service_url}
+         forwardAuthToken: true
+   type: javascript.nodejs
+   path: web/
+ - name: js
+   parameters:
+      memory: 96MB
+      disk: 256M
+   provides:
+    - name: js_api
+      properties:
+         service_url: ${default-url}
+   requires:
+    - name: mta-python-uaa
+    - name: hdi-container
+   type: javascript.nodejs
+   path: js/
+ - name: python
+   parameters:
+      memory: 32MB
+      disk: 256M
+   provides:
+    - name: python_api
+      properties:
+         service_url: ${default-url}
+   requires:
+    - name: mta-python-uaa
+    - name: hdi-container
+   type: custom
+   path: python/
+resources:
+ - name: hdi-container
+   properties:
+      hdi-container-name: ${service-name}
+   type: com.sap.xs.hdi-container
+ - name: mta-python-uaa
+   type: com.sap.xs.uaa
+version: 0.0.1
