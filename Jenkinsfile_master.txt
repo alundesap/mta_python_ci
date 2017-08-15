@@ -4,7 +4,7 @@
 // http://groovy-lang.org/semantics.html
 node {
 	stage('Pull') {
-		git credentialsId: 'alunde', url: 'https://alunde@bitbucket.org/byol/mta_base.git'
+		git credentialsId: 'alundesap', url: 'https://github.com/alundesap/mta_python_ci.git'
 	}
 	
 	stage('Prep') {
