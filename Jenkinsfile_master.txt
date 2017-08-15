@@ -36,13 +36,9 @@ node {
 		// Run HDI-Deploy
 		sh 'hdi-deploy db'
 
-//		sh 'rebuild_mod base- xsjs python-container'
-
-//		sh 'rebuild_mod base- nodejs python-container'
-
-//		sh 'xsa_re_cs xsuaa default mta-python-uaa'
-
 		// NodeJS module
+
+		sh 'rebuild_mod python- js python-container'
 
 		// Python module
 
