@@ -25,7 +25,7 @@ def hello_world():
 
 @app.route('/python/test')
 def testing_world():
-    return 'Testing!!!abc!!! I am instance ' + str(os.getenv("CF_INSTANCE_INDEX", 0))
+    return 'Testing!!!xyz!!! I am instance ' + str(os.getenv("CF_INSTANCE_INDEX", 0))
 
 @app.route('/python/test2')
 def testing2_world():
