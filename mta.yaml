@@ -22,23 +22,18 @@ modules:
       group: destinations
       properties:
         name: js_be
-        url: ~{service_url}
+        url: ~{url}
         forwardAuthToken: true
     - name: python_api
       group: destinations
       properties:
         name: python_be
-#== Begin Surrogate Block ==
-        url:  "https://hxe2.sfphcp.com:51026"
-#== End Surrogate Block ==
-#== Begin Custom Block ==
-#        url: ~{service_url}
-#== End Custom Block ==
+        url: ~{url}
         forwardAuthToken: true
 
  - name: js
    type: nodejs
-   path: js/
+   path: js
    parameters:
       memory: 96MB
       disk: 256M
@@ -48,29 +43,10 @@ modules:
    provides:
     - name: js_api
       properties:
-        service_url: ${default-url}
-#== Begin Surrogate Block ==
+         url: ${default-url}
     - name: python_api
       properties:
-        service_url: ${default-url}
-#== End Surrogate Block ==
-
-#== Begin Custom Block ==
-# - name: python
-#   type: custom
-#   path: python/
-#   parameters:
-#      memory: 32MB
-#      disk: 256M
-#   requires:
-#    - name: mta-python-uaa
-#    - name: hdi-container
-#   provides:
-#    - name: python_api
-#      properties:
-#        service_url: ${default-url}
-#== End Custom Block ==
-
+         url: ${default-url}
 
  - name: ver
    type: nodejs
