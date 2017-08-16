@@ -38,11 +38,18 @@ node {
 
 		// NodeJS module
 
-		sh 'rebuild_mod python- js python-container'
+		sh 'rebuild_mod python- js python-container --rebindto mta-python-uaa'
 
 		// Python module
+		
+		sh 'xs push python-python -p python -m 128M -b my_python_buildpack'
+		sh 're_bind python-python python-container mta-python-uaa'
 
 		// Web Module
+		
+		sh 'rebuild_mod python- web mta-python-uaa'
+		sh 'chmod 755 tools/remap_approuter.sh'
+		sh 'tools/remap_approuter.sh'
 
 	}    
 	
