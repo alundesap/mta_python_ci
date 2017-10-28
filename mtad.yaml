@@ -9,7 +9,7 @@ modules:
    path: db/
  - name: web
    parameters:
-      memory: 96MB
+      memory: 95MB
       disk: 256M
    requires:
     - name: mta-python-uaa
